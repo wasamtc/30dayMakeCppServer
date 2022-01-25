@@ -22,6 +22,7 @@ int main() {
         char buf[1024];
         bzero(&buf, sizeof(buf));
         scanf("%s", buf);
+        // TCP可直接用read和write来读写，具体参数如下，服务端和客户端要分清socket，返回值是读或写的大小
         ssize_t write_bytes = write(sockfd, buf, sizeof(buf));
         if(write_bytes == -1){
             printf("socket already disconnected, can't write any more!\n");
