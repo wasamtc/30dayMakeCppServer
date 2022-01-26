@@ -2,5 +2,5 @@
 #define UTIL_H
 
 void errif(bool, const char*);
-
+void setnonblocking(int);
 #endif
