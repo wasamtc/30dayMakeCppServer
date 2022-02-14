@@ -2,27 +2,23 @@
 #include <sys/epoll.h>
 
 class Epoll;
-class Channel
-{
-private:
-    Epoll *ep;
-    int fd;
-    uint32_t events;
-    uint32_t revents;
-    bool inEpoll;
-public:
-    Channel(Epoll *_ep, int _fd);
-    ~Channel();
+class Channel{
+    private:
+        Epoll *ep;
+        int fd;
+        uint32_t events;
+        uint32_t revents;
+        bool inEpoll;
+    public:
+        Channel(int _fd, Epoll *_ep);
+        ~Channel();
 
-    void enableReading();
+        void enableReading();
 
-    int getFd();
-    uint32_t getEvents();
-    uint32_t getRevents();
-    bool getInEpoll();
-    void setInEpoll();
-
-    // void setEvents(uint32_t);
-    void setRevents(uint32_t);
+        void setRevents(uint32_t);
+        uint32_t getRevents();
+        uint32_t getEvents();
+        bool getInEpoll();
+        void setInEpoll();
+        int getFd();
 };
-
