@@ -2,16 +2,17 @@
 #include <functional>
 
 class EventLoop;
+class Channel;
 class Socket;
 class InetAddress;
-class Channel;
+
 class Acceptor
 {
 private:
     EventLoop *loop;
+    Channel *acceptChannel;
     Socket *sock;
     InetAddress *addr;
-    Channel *acceptChannel;
 public:
     Acceptor(EventLoop *_loop);
     ~Acceptor();
@@ -19,4 +20,5 @@ public:
     std::function<void(Socket*)> newConnectionCallback;
     void setNewConnectionCallback(std::function<void(Socket*)>);
 };
+
 

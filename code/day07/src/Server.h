@@ -1,7 +1,7 @@
 #pragma once
 
 class EventLoop;
-class Socket;
+class Socket; 
 class Acceptor;
 class Server
 {
@@ -11,8 +11,7 @@ private:
 public:
     Server(EventLoop*);
     ~Server();
-
-    void handleReadEvent(int);
-    void newConnection(Socket *serv_sock);
+    
+    void handleReadEvent(int sockfd);
+    void newConnection(Socket*);
 };
-

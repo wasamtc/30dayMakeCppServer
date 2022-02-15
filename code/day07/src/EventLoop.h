@@ -1,6 +1,7 @@
 #pragma once
-class Epoll;
 class Channel;
+class Epoll;
+
 class EventLoop
 {
 private:
@@ -9,8 +10,6 @@ private:
 public:
     EventLoop();
     ~EventLoop();
-
     void loop();
-    void updateChannel(Channel*);
+    void updateChannel(Channel *);
 };
-

@@ -1,7 +1,9 @@
 #pragma once
 #include <sys/epoll.h>
 #include <functional>
+
 class EventLoop;
+
 class Channel
 {
 private:
@@ -10,22 +12,18 @@ private:
     uint32_t events;
     uint32_t revents;
     bool inEpoll;
-    std::function<void()> callback;
+    std::function<void ()> callback;
 public:
-    Channel(EventLoop *_loop, int _fd);
+    Channel(int _fd, EventLoop *_loop);
     ~Channel();
 
-    void handleEvent();
     void enableReading();
-
-    int getFd();
-    uint32_t getEvents();
+    void handleEvent();
+    void setCallback(std::function<void ()>);
+    void setRevents(uint32_t);
     uint32_t getRevents();
+    uint32_t getEvents();
     bool getInEpoll();
     void setInEpoll();
-
-    // void setEvents(uint32_t);
-    void setRevents(uint32_t);
-    void setCallback(std::function<void()>);
+    int getFd();
 };
-
