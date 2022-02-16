@@ -1,40 +1,42 @@
 #include "Connection.h"
-#include "Socket.h"
 #include "Channel.h"
-#include <unistd.h>
+#include "Socket.h"
 #include <string.h>
+#include <unistd.h>
+
 #define READ_BUFFER 1024
 
-Connection::Connection(EventLoop *_loop, Socket *_sock) : loop(_loop), sock(_sock), channel(nullptr){
-    channel = new Channel(loop, sock->getFd());
-    std::function<void()> cb = std::bind(&Connection::echo, this, sock->getFd());
-    channel->setCallback(cb);
-    channel->enableReading();
+Connection::Connection(EventLoop *_loop, Socket *_sock) : loop(_loop), clnt_sock(_sock){
+    clnt_ch = new Channel(clnt_sock->getFd(), loop);
+    std::function<void()> cb = std::bind(&Connection::handleReadEvent, this, clnt_sock->getFd());
+    clnt_ch->setCallback(cb);
+    clnt_sock->setnonblocking();
+    clnt_ch->enableReading();
 }
 
 Connection::~Connection(){
-    delete channel;
-    delete sock;
+    delete clnt_sock;  
+    delete clnt_ch;
 }
 
-void Connection::echo(int sockfd){
+void Connection::handleReadEvent(int sockfd){
     char buf[READ_BUFFER];
-    while(true){    //由于使用非阻塞IO，读取客户端buffer，一次读取buf大小数据，直到全部读取完毕
-        bzero(&buf, sizeof(buf));
-        ssize_t bytes_read = read(sockfd, buf, sizeof(buf));
-        if(bytes_read > 0){
-            printf("message from client fd %d: %s\n", sockfd, buf);
+    int i = 1;
+    while(true){
+        bzero(buf, READ_BUFFER); // 这里和源程序有一点不同，源程序是&buf,但是我觉得buf已经是指针类型的了。
+        ssize_t read_bytes = read(sockfd, buf, READ_BUFFER);
+        if(read_bytes > 0){
+            printf("the message from client %d : %s\n", sockfd, buf);
             write(sockfd, buf, sizeof(buf));
-        } else if(bytes_read == -1 && errno == EINTR){  //客户端正常中断、继续读取
+        } else if(read_bytes == -1 && errno == EINTR){
             printf("continue reading");
             continue;
-        } else if(bytes_read == -1 && ((errno == EAGAIN) || (errno == EWOULDBLOCK))){//非阻塞IO，这个条件表示数据全部读取完毕
-            printf("finish reading once, errno: %d\n", errno);
+        } else if(read_bytes == -1 && (errno == EAGAIN || errno == EWOULDBLOCK)){
+            printf("finish reading once. errno: %d\n", errno);
             break;
-        } else if(bytes_read == 0){  //EOF，客户端断开连接
+        } else if(read_bytes == 0){
             printf("EOF, client fd %d disconnected\n", sockfd);
-            // close(sockfd);   //关闭socket会自动将文件描述符从epoll树上移除
-            deleteConnectionCallback(sock);
+            deleteConnectionCallback(clnt_sock);
             break;
         }
     }
