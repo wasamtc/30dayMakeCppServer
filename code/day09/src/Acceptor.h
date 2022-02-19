@@ -2,19 +2,23 @@
 #include <functional>
 
 class EventLoop;
-class Socket;
 class Channel;
+class Socket;
+class InetAddress;
+
 class Acceptor
 {
 private:
     EventLoop *loop;
-    Socket *sock;
     Channel *acceptChannel;
-    std::function<void(Socket*)> newConnectionCallback;
+    Socket *sock;
+    InetAddress *addr;
 public:
     Acceptor(EventLoop *_loop);
     ~Acceptor();
     void acceptConnection();
+    std::function<void(Socket*)> newConnectionCallback;
     void setNewConnectionCallback(std::function<void(Socket*)>);
 };
+
 

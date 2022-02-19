@@ -1,6 +1,7 @@
 #pragma once
 
 class InetAddress;
+
 class Socket
 {
 private:
@@ -9,14 +10,11 @@ public:
     Socket();
     Socket(int _fd);
     ~Socket();
-
-    void bind(InetAddress*);
+    void bind(InetAddress* serv_addr);
     void listen();
     void setnonblocking();
 
-    int accept(InetAddress*);
-    void connect(InetAddress*);
+    int accept(InetAddress* clnt_addr);
 
     int getFd();
 };
-
