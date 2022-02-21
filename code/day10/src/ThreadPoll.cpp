@@ -5,10 +5,10 @@ ThreadPoll::ThreadPoll(int size) : stop(false){
         threads.emplace_back(std::thread([this](){
             while(true){
                 std::function<void()> task;
+                std::unique_lock<std::mutex> lock(tasks_mtx);
                 {
-                    std::unique_lock<std::mutex> lock(tasks_mtx);
                     cv.wait(lock, [this](){
-                        return stop || !tasks.empty();
+                    return stop || !tasks.empty();
                     });
                     if(stop && tasks.empty()) return;
                     task = tasks.front();
@@ -27,17 +27,20 @@ ThreadPoll::~ThreadPoll(){
     }
     cv.notify_all();
     for(std::thread &th : threads){
-        if(th.joinable())
+        if(th.joinable()){
             th.join();
+        }
     }
+
 }
 
-void ThreadPoll::add(std::function<void()> func){
+void ThreadPoll::addTask(std::function<void()> task){
     {
         std::unique_lock<std::mutex> lock(tasks_mtx);
-        if(stop)
-            throw std::runtime_error("ThreadPoll already stop, can't add task any more");
-        tasks.emplace(func);
+        if(stop){
+            throw std::runtime_error("ThreadPoll already stop, can't add task any more!\n");
+        }
+        tasks.emplace(task);
     }
     cv.notify_one();
 }

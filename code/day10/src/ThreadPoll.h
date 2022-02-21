@@ -1,8 +1,8 @@
 #pragma once
-#include <functional>
-#include <vector>
-#include <queue>
 #include <thread>
+#include <queue>
+#include <vector>
+#include <functional>
 #include <mutex>
 #include <condition_variable>
 
@@ -15,9 +15,7 @@ private:
     std::condition_variable cv;
     bool stop;
 public:
-    ThreadPoll(int size = 10);
+    ThreadPoll(int size = std::thread::hardware_concurrency());
     ~ThreadPoll();
-
-    void add(std::function<void()>);
-
+    void addTask(std::function<void()>);
 };
