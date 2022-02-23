@@ -1,13 +1,7 @@
-/******************************
-*   author: yuesong-feng
-*   
-*
-*
-******************************/
-
 #pragma once
 
 class InetAddress;
+
 class Socket
 {
 private:
@@ -16,14 +10,11 @@ public:
     Socket();
     Socket(int _fd);
     ~Socket();
-
-    void bind(InetAddress*);
+    void bind(InetAddress* serv_addr);
     void listen();
-    int accept(InetAddress*);
-
-    void connect(InetAddress*);
-
     void setnonblocking();
+
+    int accept(InetAddress* clnt_addr);
+
     int getFd();
 };
-

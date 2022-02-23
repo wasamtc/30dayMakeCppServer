@@ -1,34 +1,18 @@
-/******************************
-*   author: yuesong-feng
-*   
-*
-*
-******************************/
-/******************************
-*   author: yuesong-feng
-*   
-*
-*
-******************************/
 #pragma once
 #include <functional>
-
-class Epoll;
 class Channel;
-class ThreadPool;
+class Epoll;
+class ThreadPoll;
 class EventLoop
 {
 private:
     Epoll *ep;
-    ThreadPool *threadPool;
     bool quit;
+    ThreadPoll *threadpoll;
 public:
     EventLoop();
     ~EventLoop();
-
     void loop();
-    void updateChannel(Channel*);
-
+    void updateChannel(Channel *);
     void addThread(std::function<void()>);
 };
-

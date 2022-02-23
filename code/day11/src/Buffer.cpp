@@ -1,28 +1,26 @@
-/******************************
-*   author: yuesong-feng
-*   
-*
-*
-******************************/
 #include "Buffer.h"
-#include <string.h>
 #include <iostream>
-Buffer::Buffer() {}
 
-Buffer::~Buffer() {}
+Buffer::Buffer(){
 
-void Buffer::append(const char* _str, int _size){
+}
+
+Buffer::~Buffer(){
+
+}
+
+void Buffer::setbuf(const char *_str, int _size){
     for(int i = 0; i < _size; ++i){
         if(_str[i] == '\0') break;
         buf.push_back(_str[i]);
     }
 }
 
-ssize_t Buffer::size(){
+ssize_t Buffer::getsize(){
     return buf.size();
 }
 
-const char* Buffer::c_str(){
+const char* Buffer::getbuf(){
     return buf.c_str();
 }
 
@@ -33,9 +31,4 @@ void Buffer::clear(){
 void Buffer::getline(){
     buf.clear();
     std::getline(std::cin, buf);
-}
-
-void Buffer::setBuf(const char* _buf){
-    buf.clear();
-    buf.append(_buf);
 }

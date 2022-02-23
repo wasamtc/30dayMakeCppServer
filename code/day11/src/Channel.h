@@ -1,40 +1,36 @@
-/******************************
-*   author: yuesong-feng
-*   
-*
-*
-******************************/
 #pragma once
+#include <sys/epoll.h>
 #include <functional>
-class Socket;
+
 class EventLoop;
+
 class Channel
 {
 private:
     EventLoop *loop;
     int fd;
     uint32_t events;
+    uint32_t revents;
     uint32_t ready;
     bool inEpoll;
-    bool useThreadPool;
-    std::function<void()> readCallback;
-    std::function<void()> writeCallback;
+    bool useThreadPoll;
+    std::function<void ()> readCallback;
+    std::function<void ()> writeCallback;
 public:
-    Channel(EventLoop *_loop, int _fd);
+    Channel(int _fd, EventLoop *_loop);
     ~Channel();
 
+    void enableReading();
     void handleEvent();
-    void enableRead();
-
-    int getFd();
+    void setReadCallback(std::function<void ()>);
+    void setRevents(uint32_t);
+    uint32_t getRevents();
     uint32_t getEvents();
     uint32_t getReady();
-    bool getInEpoll();
-    void setInEpoll(bool _in = true);
-    void useET();
-
     void setReady(uint32_t);
-    void setReadCallback(std::function<void()>);
-    void setUseThreadPool(bool use = true);
+    bool getInEpoll();
+    void setInEpoll();
+    void useET();
+    void setUseThreadPoll(bool);
+    int getFd();
 };
-

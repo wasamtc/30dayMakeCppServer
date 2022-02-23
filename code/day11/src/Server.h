@@ -1,13 +1,8 @@
-/******************************
-*   author: yuesong-feng
-*   
-*
-*
-******************************/
 #pragma once
 #include <map>
+
 class EventLoop;
-class Socket;
+class Socket; 
 class Acceptor;
 class Connection;
 class Server
@@ -19,10 +14,7 @@ private:
 public:
     Server(EventLoop*);
     ~Server();
-
-    void handleReadEvent(int);
-    void newConnection(Socket *sock);
-    void deleteConnection(int sockfd);
+    
+    void deleteConnection(Socket*);
+    void newConnection(Socket*);
 };
-
-
