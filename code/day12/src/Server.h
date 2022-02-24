@@ -1,32 +1,25 @@
-/******************************
-*   author: yuesong-feng
-*   
-*
-*
-******************************/
 #pragma once
 #include <map>
 #include <vector>
+
 class EventLoop;
-class Socket;
+class Socket; 
 class Acceptor;
 class Connection;
-class ThreadPool;
+class ThreadPoll;
 class Server
 {
 private:
+
     EventLoop *mainReactor;
+    std::vector<EventLoop*>subReactor;
+    ThreadPoll *thpoll;
     Acceptor *acceptor;
     std::map<int, Connection*> connections;
-    std::vector<EventLoop*> subReactors;
-    ThreadPool *thpool;
 public:
     Server(EventLoop*);
     ~Server();
-
-    void handleReadEvent(int);
-    void newConnection(Socket *sock);
-    void deleteConnection(int sockfd);
+    
+    void deleteConnection(Socket*);
+    void newConnection(Socket*);
 };
-
-

@@ -1,0 +1,11 @@
+# day12
+
+今天的内容还是挺简单的（跟昨天比起来），就是之前只有一个Reactor，就是主线程的eventloop，负责接收事件和分发事件，但是每次分发事件都要用add函数添加到事物中并且选择一个线程进行处理，这样效率就很低，所以今天改成了主从Reactor模式，就是有一个主Reactor，这个mainReactor负责acceptor的事件和分发sockfd，而每个线程早早的绑定了事物，这个事物就是epoll-poll，所以有事件来了直接处理就行。具体流程如下：
+
+首先初始化一个mainReactor，然后初始化Server，在初始化Server时，初始一个Acceptor，这个Acceptor是与mainReacotr绑定在一起的，即Acceptor的工作主要由mainReactor完成，然后初始化一个线程池，然后初始size个subReactor，注意，每个subReactor都有自己的epoll，然后让Eventloop的loop函数和相应的一个subReactor绑定在一起，即用std::bind生成一个可调用对象，然后把生成的这个可调用对象用threadpool的add函数加到事物中并用一个线程运行，这样就有一个线程在运行由特定的subReactor绑定的pool函数了，重复此过程完成所有线程的运行绑定，现在所有线程都绑定了对应的subReactor。
+
+在处理连接请求时，为客户端选择一个subReactor，用这个subReactor初始化客户端的Connection，即完成客户端与相应subReactor的绑定，这样客户端的channel就可以添加到subReactor的epoll中，从而让相应的线程运行客户端的事件了。
+
+所以完成绑定最关键有两步，一步是初始化server的时候把每个subReactor绑定，一步是建立连接的时候为客户端选择一个subReactor绑定，绑定和处理事件最基础的就是每个subReactor都有自己的epoll。
+
+关于std::bind绑定类成员函数和具体类实例的用法：[std::bind 类实例绑定参数](https://blog.csdn.net/dwell548560/article/details/118221881)
